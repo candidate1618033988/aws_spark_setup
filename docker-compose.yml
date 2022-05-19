@@ -1,0 +1,40 @@
+version: "3.3"
+services:
+  spark-master:
+    image: jupyter-spark:1.00
+    ports:
+      - "9090:8080"
+      - "7077:7077"
+      - '8888:8888'
+    volumes:
+      - ./apps:/opt/spark-apps
+      - ./notebooks:/opt/notebooks
+    environment:
+      - SPARK_LOCAL_IP=spark-master
+      - SPARK_WORKLOAD=master
+      - SPARK_MASTER_PORT=7077
+      - SPARK_MASTER_WEBUI_PORT=8080
+      - SPARK_LOG_DIR=/opt/spark/logs
+      - SPARK_MASTER_LOG=/opt/spark/logs/spark-master.out
+      - AWS_SECRET_ACCESS_KEY=local
+      - AWS_ACCESS_KEY_ID=local
+  demo-database:
+    image: postgres:11.7-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=casa1234
+  localstack:
+    image: localstack/localstack
+    environment:
+      - SERVICES=s3
+      - DEFAULT_REGION=eu-west-1
+      - AWS_SECRET_ACCESS_KEY=local
+      - AWS_ACCESS_KEY_ID=local
+    ports:
+      - "4566:4566"
+    volumes:
+      - ./data/:/opt/mount:rwx
+      - ./deployments/:/docker-entrypoint-initaws.d
+      - /var/run/docker.sock:/var/run/docker.sock
+
