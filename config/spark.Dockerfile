@@ -18,16 +18,16 @@ RUN (cd /usr/local/spark/jars && wget https://repo1.maven.org/maven2/com/google/
 
 # Add S3 configuration to spark
 RUN rm /usr/local/spark/conf/spark-defaults.conf
-COPY spark-defaults.conf /usr/local/spark/conf/spark-defaults.conf
+COPY config/spark-defaults.conf /usr/local/spark/conf/spark-defaults.conf
+
+# Install Python dependencies
+COPY config/requirements.txt /home/jovyan/requirements.txt
+RUN python -m pip install -r ~/requirements.txt --user
 
 # install scala kernel
-RUN python -m pip install spylon_kernel --user
 RUN python -m spylon_kernel install --user
 
 RUN mkdir jupyter_folder
 
-ENV PYSPARK_DRIVER_PYTHON_OPTS="notebook --no-browser --NotebookApp.token=''"
+ENV PYSPARK_DRIVER_PYTHON_OPTS="notebook --no-browser"
 ENV PYSPARK_DRIVER_PYTHON=/opt/conda/bin/jupyter
-
-#COPY requirements.txt /opt/spark/requirements.txt
-
